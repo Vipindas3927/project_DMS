@@ -61,7 +61,7 @@
 
             <div class="col-12">
                       <label for="yourName" class="form-label">Class</label>
-                      <select name="class_name" class="form-control" readonly="true" required >
+                      <select name="class_name" class="form-select" readonly="true" required >
                           <option value="0">Select class</option>
                           <option value="CSE-B">CSE-B</option>
                           <option value="CSE-A">CSE-A</option>
@@ -79,7 +79,7 @@
 
                     <div class="col-12">
                       <label for="yourName" class="form-label">Semester</label>
-                      <select name="semester" class="form-control" readonly="true" required >
+                      <select name="semester" class="form-select" readonly="true" required >
                           <option value="0">Select semester</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -92,9 +92,10 @@
 
                       </select>
                     </div>
-                      <div class="col-12">
+                      
+                    <div class="col-12">
                         <label for="yourName" class="form-label">Scheme</label>
-                        <select name="scheme" class="form-control" readonly="true" required >
+                        <select name="scheme" class="form-select" readonly="true" required >
                             <option value="0">Select Scheme</option>
                             {% for i in scheme_data  %}
                             <option value='{{ i.id }}'>{{i.scheme}}</option>
@@ -104,6 +105,16 @@
                         </select>
 
                     </div>
+
+                    <div class="col-12">
+                      <label for="yourName" class="form-label">Tutor</label>
+                      <select name="tutor" class="form-select" readonly="true" required >
+                          <option value="0">Select Tutor</option>
+                          {% for i in tutor_data  %}
+                          <option value='{{ i.id }}'>{{i.First_name}} {{i.Last_name}}</option>
+                          {% endfor %}
+                      </select> 
+                  </div>
 
 
                     <div class="col-12">

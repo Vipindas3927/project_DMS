@@ -1,3 +1,4 @@
+from ast import For
 import code
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
@@ -5,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 
 import login
-from hod.models import batch, scheme, subject
+from hod.models import batch, scheme, subject, subject_to_staff
 from login.models import User
 from staff.models import profile
 from student.models import profile_student
@@ -103,9 +104,12 @@ def view_faculty(request):
     context = {'name': name}
 
     staff_details = profile.objects.all()
+    batch_data = batch.objects.all()
 
     return render(request, 'view_faculty.html',
-                  {"staff_data": staff_details, "context": context, "data_for_self_profile": staff_details_1})
+                  {"staff_data": staff_details, "context": context, "data_for_self_profile": staff_details_1,
+                  'batch_data': batch_data
+                  })
 
 
 def delete_faculty(request, f_id):
@@ -373,13 +377,16 @@ def create_batch(request):
     context = {'name': name}
     scheme_data = scheme.objects.all()
 
+    tutor_data = profile.objects.all()
+
     if request.method == 'POST':
         class_name = request.POST.get('class_name')
         date_of_join = request.POST.get('date_of_join')
         semester = request.POST.get('semester')
         scheme_input = request.POST.get('scheme')
-
+        tutor_id = request.POST.get('tutor')
         scheme_input_int = int(scheme_input)
+        tutor = int(tutor_id)
 
         if class_name == '0':
             messages.error(request, 'Please select class')
@@ -387,19 +394,21 @@ def create_batch(request):
             messages.error(request, 'Please select Semester')
         elif scheme_input == '0':
             messages.error(request, 'Please select Scheme')
+        elif tutor_id == '0':
+            messages.error(request, 'Please select Tutor')
         else:
             data = batch.objects.filter(class_name=class_name, date_of_join=date_of_join, semester=semester,
-                                        scheme=scheme_input_int)
+                                        scheme=scheme_input_int, tutor_id=tutor)
 
             if data:
                 messages.error(request, 'The class already exist')
             else:
                 batch.objects.create(class_name=class_name, date_of_join=date_of_join, semester=semester,
-                                     scheme=scheme_input_int)
+                                     scheme=scheme_input_int, tutor_id=tutor)
                 messages.error(request, 'Successfully added the class ' + class_name + ' year ' + date_of_join)
 
     return render(request, 'create_batch.html',
-                  {"context": context, "scheme_data": scheme_data, "data_for_self_profile": staff_details_1})
+                  {"context": context, "scheme_data": scheme_data, "data_for_self_profile": staff_details_1, "tutor_data": tutor_data})
 
 
 def view_batch(request):
@@ -411,9 +420,9 @@ def view_batch(request):
 
     data = batch.objects.all()
     scheme_data = scheme.objects.all()
-
+    tutor_data = profile.objects.all()
     return render(request, 'view_batch.html', {"batch_data": data, "scheme_data": scheme_data, "context": context,
-                                               "data_for_self_profile": staff_details_1})
+                                               "data_for_self_profile": staff_details_1, "tutor_data": tutor_data})
 
 
 def edit_batch(request, b_id):
@@ -423,31 +432,48 @@ def edit_batch(request, b_id):
     name = staff_details_1.First_name + " " + staff_details_1.Last_name
     context = {'name': name}
 
+
     edit_data = batch.objects.get(id=b_id)
     join_date = str(edit_data.date_of_join)
     edit_scheme_id = edit_data.scheme
     scheme_data = scheme.objects.all()
+    tutor_data = profile.objects.all()
 
     edit_scheme_data = scheme.objects.get(id=edit_scheme_id)
+    student_data = profile_student.objects.filter(batch=b_id)
 
+    subject_data = subject.objects.all()
+    assign_subject_data = subject_to_staff.objects.filter(batch_id=b_id)
+    
     if request.method == 'POST':
-        class_name = request.POST.get('class_name')
-        date_of_join = request.POST.get('date_of_join')
+        # class_name = request.POST.get('class_name')
+        # date_of_join = request.POST.get('date_of_join')
         semester = request.POST.get('semester')
-        scheme_input = request.POST.get('scheme')
+        tutor = request.POST.get('tutor')
+        # scheme_input = request.POST.get('scheme')
 
+        ''' 
         if class_name == '0':
             messages.error(request, 'Please select class')
         elif semester == '0':
             messages.error(request, 'Please select semester')
         elif scheme_input == '0':
             messages.error(request, 'Please select Scheme')
+        '''
 
+        if semester == '0':
+            messages.error(request, 'Please select semester')
         else:
-
+            edit_data1 = batch.objects.get(id=b_id)
+            edit_data1.semester = str(semester)
+            edit_data1.tutor_id = int(tutor)
+            # print(semester)
+            edit_data1.save()
+            messages.error(request, 'Successfully Updated')
+            return redirect(hod.views.view_batch)
+            '''
             sh_data = int(scheme_input)
-            data = batch.objects.filter(class_name=class_name, date_of_join=date_of_join, semester=semester,
-                                        scheme=sh_data)
+            data = batch.objects.filter(class_name=class_name, date_of_join=date_of_join, semester=semester, scheme=sh_data)
 
             if data:
 
@@ -464,11 +490,17 @@ def edit_batch(request, b_id):
                 # update_student = profile_student.objects.filter(class_name=class_name1, year_of_join=year_only)
                 messages.error(request, 'Successfully added the class ' + class_name + ' year ' + date_of_join)
                 return redirect(hod.views.view_batch)
+            '''
 
     return render(request, 'edit_batch.html',
                   {'edit_data': edit_data, 'context': context, 'scheme_data': scheme_data, 'date': join_date,
                    "data_for_self_profile": staff_details_1
-                      , 'present_scheme': edit_scheme_data
+                      , 'present_scheme': edit_scheme_data,
+                      'tutor_data':tutor_data,
+                      'student_data':student_data,
+                      'subject_data': subject_data,
+                      'assign_subject_data': assign_subject_data
+
                    })
 
 
@@ -544,11 +576,14 @@ def create_subject(request):
 
     scheme_data = scheme.objects.all()
     if 'create_subject' in request.POST:
-        subject_code = request.POST.get('subject_code')
-        subject_name = request.POST.get('subject_name')
+        subject_code_input = request.POST.get('subject_code')
+        subject_name_input = request.POST.get('subject_name')
         subject_credit = request.POST.get('subject_credit')
         scheme_id = request.POST.get('scheme')
         scheme_id_int = int(scheme_id)
+
+        subject_code = subject_code_input.upper()
+        subject_name = subject_name_input.upper()
 
         # check the subject already exist
         subject_exist = subject.objects.filter(code=subject_code, scheme=scheme_id_int).count()
@@ -667,6 +702,61 @@ def edit_subject(request, subject_id):
                    })
 
 
+def assign_subject_to_staff(request):
+    staff_id = request.session['hod_username']
+    staff_details_1 = profile.objects.get(Faculty_unique_id=staff_id)
+    name = staff_details_1.First_name + " " + staff_details_1.Last_name
+    context = {'name': name}
+
+    batch_data_class = batch.objects.all()
+    scheme_data = scheme.objects.all()
+    subject_data = subject.objects.all()
+    faculty = profile.objects.all()
+
+    if request.method == 'POST':
+        batch_id   = int(request.POST.get('batch_id'))
+        subject_id = int(request.POST.get('subject_id'))
+        faculty_id = int(request.POST.get('faculty_id'))
+        sem = int(request.POST.get('semester'))
+
+        batch_id_data = batch.objects.filter(id=batch_id)
+        subject_id_data = subject.objects.filter(id=subject_id)
+        valid_scheme = False
+
+        for i in batch_id_data:
+            for j in subject_id_data:
+                if i.scheme == j.scheme:
+                    valid_scheme = True
+        
+        if batch_id == 0:
+            messages.error(request, "Select Class")
+        elif subject_id == 0:
+            messages.error(request, "Select Subject")
+        elif valid_scheme == False:
+            messages.error(request, "Select Subject with same scheme")
+        elif sem == 0:
+            messages.error(request, "Select Semester")
+        elif faculty_id == 0:
+            messages.error(request, "Select Faculty")
+        else:
+
+            check_exist = subject_to_staff.objects.filter(subject_id=subject_id, batch_id=batch_id)
+            if check_exist:
+                messages.error(request, "Subject Exist")
+            else:
+                subject_to_staff.objects.create(subject_id=subject_id, batch_id=batch_id, staff_id=faculty_id, semester=sem)
+                messages.error(request, "Successfully added")
+        
+        
+
+    return render(request, 'assign_subject_to_staff.html', {'context': context, "data_for_self_profile": staff_details_1,
+                'batch_class': batch_data_class,
+                'scheme_data': scheme_data,
+                'subject_data': subject_data,
+                'faculty': faculty
+                })
+
+
 def delete_subject(request, subject_id):
     subject_for_delete = subject.objects.get(id=subject_id)
     subject_for_delete.delete()
@@ -682,8 +772,14 @@ def batch_details(request, b_id):
     name = staff_details_1.First_name + " " + staff_details_1.Last_name
     context = {'name': name}
     return render(request, 'batch_details.html', {'context': context, "data_for_self_profile": staff_details_1})
+# manage tutors
 
-
+def view_tutor(request):
+    staff_id = request.session['hod_username']
+    staff_details_1 = profile.objects.get(Faculty_unique_id=staff_id)
+    name = staff_details_1.First_name + " " + staff_details_1.Last_name
+    context = {'name': name}
+    return render(request, 'view_tutor.html', {'context': context, "data_for_self_profile": staff_details_1})
 # logout
 def log_out(request):
     logout(request)

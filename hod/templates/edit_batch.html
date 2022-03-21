@@ -2,13 +2,104 @@
 {% load static %}
 
 {% block content %}
+<style>
+  #datatable tbody tr:nth-child(even){
+      background-color: #f5f5f5;
+  }
+  @media(max-width: 746px){
+      .datatable thead{
+          display: none;
+      }
+  
+      #datatable, #datatable tbody, #datatable tr, #datatable td{
+          display: block;
+          width: 100%;
+      }
+      #datatable tr{
+          margin-bottom:15px;
+          padding-left: 50%;
+          text-align: left;
+
+      }
+      #datatable td{
+          text-align: relative;
+          padding-left: 50%;
+          text-align: relative;
+      }
+
+      #datatable td::before{
+          content: attr(data-label);
+          position: absolute;
+          left:0;
+          width: 50%;
+          padding-left: 50px;
+          font-size:15px;
+          font-weight: bold;
+          text-align: left;
+      }
+      
+      #datatable td:nth-of-type(1):before { content: "SI NO"; }
+      #datatable td:nth-of-type(2):before { content: "CODE"; }
+      #datatable td:nth-of-type(3):before { content: "SUBJECT NAME"; }
+      #datatable td:nth-of-type(4):before { content: "CREDIT"; }
+     
+  }
+  
+    .datatable tbody tr:nth-child(even){
+        background-color: #f5f5f5;
+    }
+    @media(max-width: 746px){
+        .datatable thead{
+            display: none;
+        }
+    
+        .datatable, .datatable tbody, .datatable tr, .datatable td{
+            display: block;
+            width: 100%;
+        }
+        .datatable tr{
+            margin-bottom:15px;
+            padding-left: 50%;
+            text-align: left;
+  
+        }
+        .datatable td{
+            text-align: relative;
+            padding-left: 50%;
+            text-align: relative;
+        }
+        .datatable td::before{
+            content: attr(data-label);
+            position: absolute;
+            left:0;
+            width: 50%;
+            padding-left: 30px;
+            font-size:15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        td:nth-of-type(1):before { content: "SI NO"; }
+        td:nth-of-type(2):before { content: "CLASS"; }
+        td:nth-of-type(3):before { content: "DATE OF JOIN"; }
+        td:nth-of-type(4):before { content: "SEMESTER"; }
+        td:nth-of-type(5):before { content: "SCHEME"; }
+        td:nth-of-type(6):before { content: "EDIT"; }
+        td:nth-of-type(7):before { content: "DELETE"; }
+    }
+  
+  
+  
+
+
+</style>
+
 <main id="main" class="main">
 
     
 
     <div class="col-lg-6">
         <div class="container">
-          <h2 class="card-title-size">Edit batch</h2>
+          <h2 class="card-title-size">View batch</h2>
 
             <br/>
         </div>
@@ -34,7 +125,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
             {% endfor %}
-
+            <br>
             <div class="col-6">
                       <label for="yourName" class="col-sm-2 col-form-label">Class</label>
                       <input type="text" name="class_name" class="form-control" value={{edit_data.class_name}} readonly>
@@ -71,8 +162,8 @@
                     <div class="col-6">
                       <label class="col-sm-2 col-form-label">Semester</label>
                       <div class="col-sm-12">
-                        <select class="form-select" aria-label="Default select example" required>
-
+                        <select class="form-select" name="semester" aria-label="Default select example" required>
+                          
                           {% if edit_data.semester == '1' %}
                           <option value="1" selected>1</option>
                           <option value="2">2</option>
@@ -153,10 +244,33 @@
                           <option value="6">6</option>
                           <option value="7">7</option>
                           <option value="8" selected>8</option>
-
+                          {% else%}
+                          
+                          <option value="1" >1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                          <option value="7">7</option>
+                          <option value="8">8</option>
 
                           {% endif %}
 
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <label class="col-sm-2 col-form-label">Tutor</label>
+                      <div class="col-sm-12">
+                        <select class="form-select" name="tutor" aria-label="Default select example" required>
+                          {% for i in tutor_data %}
+                              {% if edit_data.tutor_id == i.id %}
+                              <option value='{{i.id}}' selected>{{i.First_name}} {{i.Last_name}}</option>
+                              {% endif %}
+                          <option value='{{i.id}}'>{{i.First_name}} {{i.Last_name}}</option>
+                          {% endfor %}
+                          
                         </select>
                       </div>
                     </div>
@@ -181,7 +295,9 @@
 
                     </div>
 
-
+                    
+                    <div>
+                    </div>
                     <div class="col-2" >
                       <label class="form-label"><br></label>
                       <button class="btn btn-primary w-20 form-control" style="width: 94px;" type="submit"> Update </button>
@@ -214,7 +330,34 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapseed collapse " aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                   <div class="accordion-body">
-                    <h1>Haii</h1>
+                    <table class="datatable">
+                      <br>
+                        <thead>
+                          <tr>
+                            <th>SI NO</th>
+                            <th>ADMISSION NO</th>
+                            <th>NAME</th>
+                            <th >PHONE NO</th>
+                            <th>EMAIL</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          
+                      {% for i in student_data %}
+                        
+                          <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.register_no }}</td>
+                            <td>{{ i.first_name }} {{ i.last_name }}</td>
+                            <td >{{ i.phone_no }}</td>
+                            <td>{{ i.email }} </td>
+                            <td><a href="{% url 'edit_batch' b_id=i.id %}" ><button type="button" class="btn btn-outline-success btn-sm"><i class="bi bi-eye btn-sm"></i> View</button></a> </td>
+                          </tr>
+                      {% endfor %}
+
+                        </tbody>
+                    </table>
 
 
                   </div>
@@ -243,7 +386,43 @@
                         </h2>
                         <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 1 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
@@ -256,8 +435,42 @@
                         </h2>
                         <div id="collapse11" class="accordion-collapse collapse" aria-labelledby="heading11" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                          </div>
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 2 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          </div>
                         </div>
                       </div>
 
@@ -269,8 +482,42 @@
                         </h2>
                         <div id="collapse12" class="accordion-collapse collapse" aria-labelledby="heading12" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                          </div>
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 3 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          </div>
                         </div>
                       </div>
 
@@ -282,8 +529,42 @@
                         </h2>
                         <div id="collapse13" class="accordion-collapse collapse" aria-labelledby="heading13" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                          </div>
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 4 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          </div>
                         </div>
                       </div>
 
@@ -295,8 +576,42 @@
                         </h2>
                         <div id="collapse14" class="accordion-collapse collapse" aria-labelledby="heading14" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                          </div>
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 5 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          </div>
                         </div>
                       </div>
 
@@ -308,7 +623,42 @@
                         </h2>
                         <div id="collapse15" class="accordion-collapse collapse" aria-labelledby="heading15" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 6 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          
                           </div>
                         </div>
                       </div>
@@ -321,7 +671,42 @@
                         </h2>
                         <div id="collapse16" class="accordion-collapse collapse" aria-labelledby="heading16" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                            <table class="datatable" id="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 7 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          
                           </div>
                         </div>
                       </div>
@@ -334,7 +719,42 @@
                         </h2>
                         <div id="collapse17" class="accordion-collapse collapse" aria-labelledby="heading17" data-bs-parent="#accordionExample1">
                           <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                            <table class="datatable">
+                              <br>
+                                <thead>
+                                  <tr>
+                                    <th>SI NO</th>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>CREDIT</th>
+                                    
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                  {% for j in assign_subject_data %}
+                                  {% if  j.semester == 8 %}
+                                  <tr>
+                                    
+                                    
+                                    <td>{{ forloop.counter }}</td>
+                                    {% for i in subject_data %}
+                                    {% if j.subject_id == i.id %}
+                                    <td>{{i.code}}</td>
+                                    <td>{{i.subject_name}}</td>
+                                    <td>{{i.credit}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                        
+                                  </tr>
+                                  {% endif %}
+                              {% endfor %}
+
+                                  
+                             
+        
+                                </tbody>
+                            </table>                          
                           </div>
                         </div>
                       </div>

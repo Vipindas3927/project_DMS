@@ -134,6 +134,7 @@
     $(document).ready(function(){
       $("#subject_code").keyup(function(){
         var subject_code =$(this).val();
+        subject_code = subject_code.toUpperCase();
         var scheme_id = document.getElementsByName('scheme')[0].value;
         console.log(scheme_id);
         if(scheme_id == '0')

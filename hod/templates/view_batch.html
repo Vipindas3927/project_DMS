@@ -68,15 +68,16 @@
 
 <br/>
       {% for message in messages %}
-                   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-octagon me-1"></i>
+                   <div class="alert alert-success alert-dismissible fade show" role="alert">
+                
                 {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
             {% endfor %}
 
 
 
-
+      <br>
       <div style="overflow-x:auto;">
           <table class="datatable">
             <br>
@@ -87,6 +88,7 @@
                   <th>DATE OF JOIN</th>
                   <th >SEMESTER</th>
                   <th>SCHEME</th>
+                  <th>Tutor</th>
                   <th></th>
                   
 
@@ -102,10 +104,18 @@
                 <tr>
 
                   <td>{{ forloop.counter }}</td>
+                  
                   <td>{{ i.class_name }}</td>
                   <td>{{ i.date_of_join }}</td>
                   <td >{{ i.semester }}</td>
                   <td>{{ j.scheme }} </td>
+
+                  {% for staff in tutor_data %}
+                  {% if i.tutor_id == staff.id %}
+                    <td>{{staff.First_name}} {{staff.Last_name}}</td>
+                  {% else %}
+                  {% endif %}
+                  {% endfor %}
                   <td><a href="{% url 'edit_batch' b_id=i.id %}" ><button type="button" class="btn btn-outline-success btn-sm"><i class="bi bi-eye btn-sm"></i> View</button></a> </td>
 
                   <!--
@@ -147,6 +157,7 @@
                     </td>-->
 
                 </tr>
+                
                 
                 {% endif %}
                 

@@ -624,6 +624,11 @@ def view_subject(request):
 
     scheme_data = scheme.objects.all()
     view_subject_all = subject.objects.all()
+    assign_subject_data = subject_to_staff.objects.all()
+    none = "None"
+    staff_data = profile.objects.all()
+    batch_data = batch.objects.all()
+    
     if 'view_subject' in request.POST:
         scheme_id = request.POST.get('scheme_id')
         scheme_id_int = int(scheme_id)
@@ -647,12 +652,21 @@ def view_subject(request):
             return render(request, 'view_subject.html',
                           {'context': context, 'scheme_data': scheme_data, 'view_subject': view_subject,
                            'scheme_input_id': scheme_input_id,
-                           'scheme_name': scheme_name, "data_for_self_profile": staff_details_1
+                           'scheme_name': scheme_name, "data_for_self_profile": staff_details_1,
+                           'assign_subject_data':assign_subject_data,
+                           'none': none,
+                           'staff_data': staff_data,
+                           'batch_data': batch_data
                            })
 
     return render(request, 'view_subject.html',
                   {'context': context, 'scheme_data': scheme_data, "data_for_self_profile": staff_details_1,
-                   "view_subject": view_subject_all})
+                   "view_subject": view_subject_all, 
+                   'assign_subject_data':assign_subject_data,
+                   'none': none,
+                   'staff_data': staff_data,
+                   'batch_data': batch_data
+                   })
 
 
 def edit_subject(request, subject_id):

@@ -35,7 +35,7 @@ class subject(models.Model):
         return name
 
 class subject_to_staff(models.Model):
-    subject_id = models.BigIntegerField(max_length=255, null=False, default=0)
+    subject_id = models.BigIntegerField(null=False, default=0)
     batch_id = models.BigIntegerField(null=False, default=0)
     staff_id = models.BigIntegerField(null=False, default=0)
     semester = models.BigIntegerField(null=False, default=0)

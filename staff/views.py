@@ -2,13 +2,18 @@ import login
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
+
+from hod.models import scheme, subject, subject_to_staff, batch
 from staff.models import profile
 from login.models import User
 
 
 def staff_index(request):
-    name = request.session['staff_name']
-    context = {'name': name}
+    user_id = request.session['id']
+    staff_details = profile.objects.get(Faculty_unique_id=user_id)
+    fullname = staff_details.First_name + " " + staff_details.Last_name
+    context = {'name': fullname}
+
 
     return render(request, 'staff_index.html', {'context': context})
 
@@ -110,6 +115,35 @@ def staff_profile(request):
     return render(request, 'staff_profile.html',
                   {'context': context, 'staff_details': staff_details, 'date': date, 'date_dob': dob})
 
+
+def view_subjects(request):
+    user_id = request.session['id']
+    staff_details = profile.objects.get(Faculty_unique_id=user_id)
+    fullname = staff_details.First_name + " " + staff_details.Last_name
+    context = {'name': fullname}
+
+    scheme_data = scheme.objects.all()
+    view_subject_all = subject.objects.all()
+    assign_subject_data = subject_to_staff.objects.all()
+    none = "None"
+    staff_data = profile.objects.all()
+    batch_data = batch.objects.all()
+
+
+    assigned_subject_to_this_staff = subject_to_staff.objects.filter(staff_id=staff_details.id)
+
+
+    return render(request, 'view_subjects.html',
+                  {
+    'scheme_data': scheme_data,
+    "view_subject": view_subject_all,
+    'assign_subject_data': assign_subject_data,
+    'none': none,
+    'staff_data': staff_data,
+    'batch_data': batch_data,
+    'context': context,
+    'subject_to_this_staff': assigned_subject_to_this_staff
+    })
 
 # logout
 def log_out(request):

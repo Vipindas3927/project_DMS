@@ -8,7 +8,6 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
-
 """
 
 from pathlib import Path
@@ -30,7 +29,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com', 'example.herokuapp.com']
 
 # Application definition
-
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
@@ -88,15 +86,15 @@ WSGI_APPLICATION = 'project_DMS.wsgi.application'
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }'''
+
 '''
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'project_DMS',
     }
 }'''
+
 import dj_database_url
 
 DATABASES = {
@@ -149,7 +147,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-#STATICFILES_DIRS = [(os.path.join(BASE_DIR, 'static'))]
+# STATICFILES_DIRS = [(os.path.join(BASE_DIR, 'static'))]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Storing images

@@ -6,6 +6,7 @@ from django.contrib import messages
 from hod.models import scheme, subject, subject_to_staff, batch
 from staff.models import profile
 from login.models import User
+from student.models import profile_student
 
 
 def staff_index(request):
@@ -144,6 +145,48 @@ def view_subjects(request):
     'context': context,
     'subject_to_this_staff': assigned_subject_to_this_staff
     })
+
+# view each class and assign the marks and attendance
+
+def update_class(request, batch_id, subject_id):
+    print(batch_id)
+    print(type(batch_id))
+    print(subject_id)
+    batch_id = int(batch_id)
+    subject_id = int(subject_id)
+    user_id = request.session['id']
+    staff_details = profile.objects.get(Faculty_unique_id=user_id)
+    fullname = staff_details.First_name + " " + staff_details.Last_name
+    context = {'name': fullname}
+
+    staff_id = staff_details.id
+    check_subject_exist = subject_to_staff.objects.filter(batch_id=batch_id, staff_id=staff_id, subject_id=subject_id)
+    subject_data = subject.objects.all()
+    student_data = profile_student.objects.all()
+    batch_data = batch.objects.all()
+    staff_data = profile.objects.all()
+    
+    for i in batch_data:
+        # Join date
+        date = str(i.date_of_join)
+
+    if request.method == 'POST':
+        check_data = request.POST.getlist('attendance')
+        print(check_data)
+
+
+    return render(request, 'update_class.html', {
+        'context': context,
+        'check_subject_exist': check_subject_exist,
+        'subject_data': subject_data,
+        'student_data': student_data,
+        'batch_data': batch_data,
+        'staff_data': staff_data,
+        'date': date
+        })
+
+
+
 
 # logout
 def log_out(request):
